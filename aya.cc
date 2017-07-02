@@ -46,10 +46,15 @@ public:
             return database.seckill(user_id, commodity_id);
           }).then([user_id, commodity_id, &rep](std::pair<int, int> res) {
               std::ostringstream oss;
-              oss << "{\"result\":" << res.first << ", \"order_id\":"
-                  << res.second << ", \"user_id\":\""
-                  << user_id << "\", \"commodity_id\":\""
-                  << commodity_id << "\"}\n";
+              if (res.first) {
+                oss << "{\"result\":1, \"order_id\":"
+                    << res.second << ", \"user_id\":\""
+                    << user_id << "\", \"commodity_id\":\""
+                    << commodity_id << "\"}\n";
+              } else {
+                oss << "{\"result\":0, \"order_id\":-1, \"user_id\":\""
+                    << user_id << "\"}\n";
+              }
               rep->_content = oss.str().c_str();
               rep->done("application/json");
               return make_ready_future<std::unique_ptr<reply>>(std::move(rep));

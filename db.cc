@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 
+#define RESERVED_ORDER 10000000
+
 void Database::recover(std::string input_file, std::string log_file)
 {
   std::ifstream fin(input_file);
@@ -34,6 +36,7 @@ void Database::recover(std::string input_file, std::string log_file)
   }
 
   std::ifstream flog(log_file);
+  orders.reserve(RESERVED_ORDER);
   order_size = 0;
   while(std::getline(flog, buf)) {
     int x = buf.find(',');
@@ -83,10 +86,14 @@ int Database::perform_order(const Order& order)
 std::pair<int, int> Database::seckill(std::string user_id, std::string commodity_id)
 {
   Order order(user_id, commodity_id, std::time(nullptr));
-  log_write(order);
-  ++order_size;
-  int order_id = order_size;
-  orders[order_id] = order;
   int result = perform_order(order);
-  return std::make_pair(result, order_id);
+  if (result) {
+    log_write(order);
+    ++order_size;
+    int order_id = order_size;
+    orders[order_id] = order;
+    return std::make_pair(result, order_id);
+  } else {
+    return std::make_pair(0, -1);
+  }
 }
