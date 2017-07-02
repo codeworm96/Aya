@@ -72,12 +72,41 @@ public:
         return seastar::smp::submit_to(seastar::smp::count - 1, [user_id]() {
             return database.get_user_by_id(user_id);
           }).then([&rep, user_id](User user) {
-              std::ostringstream oss;
-              oss << "{\"user_id\":\"" << user_id << "\", \"user_name\":\""
-                  << user.name << "\", \"account_balance\":"
-                  << user.account_balance / 100 << '.' << user.account_balance / 10 % 10
-                  << user.account_balance % 10 << "}\n";
-              rep->_content = oss.str().c_str();
+              rep->_content = user.dump(user_id);
+              rep->done("application/json");
+              return make_ready_future<std::unique_ptr<reply>>(std::move(rep));
+            });
+      });
+  }
+};
+
+class GetCommodityByIdHandler : public httpd::handler_base {
+public:
+  virtual future<std::unique_ptr<reply> > handle(const sstring& path,
+                                                 std::unique_ptr<request> req, std::unique_ptr<reply> rep) {
+    return do_with(std::move(req), std::move(rep), [] (auto& req, auto& rep) {
+        std::string commodity_id = req->get_query_param("commodity_id");
+        return seastar::smp::submit_to(seastar::smp::count - 1, [commodity_id]() {
+            return database.get_commodity_by_id(commodity_id);
+          }).then([&rep, commodity_id](Commodity commodity) {
+              rep->_content = commodity.dump_full(commodity_id);
+              rep->done("application/json");
+              return make_ready_future<std::unique_ptr<reply>>(std::move(rep));
+            });
+      });
+  }
+};
+
+class GetOrderByIdHandler : public httpd::handler_base {
+public:
+  virtual future<std::unique_ptr<reply> > handle(const sstring& path,
+                                                 std::unique_ptr<request> req, std::unique_ptr<reply> rep) {
+    return do_with(std::move(req), std::move(rep), [] (auto& req, auto& rep) {
+        int order_id = std::stoi(req->get_query_param("order_id"));
+        return seastar::smp::submit_to(seastar::smp::count - 1, [order_id]() {
+            return database.get_order_by_id(order_id);
+          }).then([&rep, order_id](Order order) {
+              rep->_content = order.dump(order_id);
               rep->done("application/json");
               return make_ready_future<std::unique_ptr<reply>>(std::move(rep));
             });
@@ -88,6 +117,8 @@ public:
 void set_routes(routes& r) {
     r.add(operation_type::GET, url("/seckill/seckill"), new SeckillHandler());
     r.add(operation_type::GET, url("/seckill/getUserById"), new GetUserByIdHandler());
+    r.add(operation_type::GET, url("/seckill/getCommodityById"), new GetCommodityByIdHandler());
+    r.add(operation_type::GET, url("/seckill/getOrderById"), new GetOrderByIdHandler());
 }
 
 int main(int ac, char** av) {

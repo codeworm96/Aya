@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #define RESERVED_ORDER 10000000
 
@@ -96,4 +98,45 @@ std::pair<int, int> Database::seckill(std::string user_id, std::string commodity
   } else {
     return std::make_pair(0, -1);
   }
+}
+
+std::string User::dump(std::string user_id)
+{
+  std::ostringstream oss;
+  oss << "{\"user_id\":\"" << user_id << "\", \"user_name\":\""
+      << name << "\", \"account_balance\":"
+      << account_balance / 100 << '.' << account_balance / 10 % 10
+      << account_balance % 10 << "}\n";
+  return oss.str().c_str();
+}
+
+std::string Commodity::dump_full(std::string commodity_id)
+{
+  std::ostringstream oss;
+  oss << "{\"commodity_id\":\"" << commodity_id << "\", \"commodity_name\":\""
+      << name << "\", \"quantity\":"
+      << quantity << ", \"unit_price\":"
+      << unit_price / 100 << '.' << unit_price / 10 % 10
+      << unit_price % 10 << "}\n";
+  return oss.str().c_str();
+}
+
+std::string Commodity::dump_brief(std::string commodity_id)
+{
+  std::ostringstream oss;
+  oss << "{\"commodity_id\":\"" << commodity_id << "\", \"commodity_name\":\""
+      << name << "\", \"quantity\":"
+      << quantity << "}\n";
+  return oss.str().c_str();
+}
+
+std::string Order::dump(int order_id)
+{
+  std::ostringstream oss;
+  oss << "{\"order_id\":" << order_id
+      << ", \"user_id\":\"" << user_id
+      << "\", \"commodity_id\":\"" << commodity_id
+      << "\", \"timestamp\":\"" << std::put_time(std::gmtime(&timestamp), "%Y-%m-%d %H:%M:%S")
+      << "\"}";
+  return oss.str().c_str();
 }

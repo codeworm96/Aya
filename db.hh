@@ -14,6 +14,7 @@ struct User
 {
   std::string name;
   int account_balance;
+  std::string dump(std::string user_id);
 };
 
 struct Commodity
@@ -21,6 +22,8 @@ struct Commodity
   std::string name;
   int quantity;
   int unit_price;
+  std::string dump_brief(std::string commodity_id);
+  std::string dump_full(std::string commodity_id);
 };
 
 struct Order
@@ -30,6 +33,7 @@ struct Order
   std::time_t timestamp;
   Order() {}
   Order(std::string u, std::string c, std::time_t t): user_id(u), commodity_id(c), timestamp(t) {}
+  std::string dump(int order_id);
 };
 
 class Database
@@ -42,6 +46,9 @@ public:
   }
   Commodity get_commodity_by_id(std::string commodity_id) {
     return commodities[commodity_id];
+  }
+  Order get_order_by_id(int order_id) {
+    return orders[order_id];
   }
 private:
   std::unordered_map<std::string, User> users;
