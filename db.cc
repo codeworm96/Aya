@@ -100,13 +100,64 @@ std::pair<int, int> Database::seckill(std::string user_id, std::string commodity
   }
 }
 
+std::string Database::get_user_all()
+{
+  std::ostringstream oss;
+  oss << '[';
+  bool flag = false;
+  for (auto& item : users) {
+    if (flag) {
+      oss << ',';
+    } else {
+      flag = true;
+    }
+    oss << item.second.dump(item.first);
+  }
+  oss << ']';
+  return oss.str().c_str();
+}
+
+std::string Database::get_commodity_all()
+{
+  std::ostringstream oss;
+  oss << '[';
+  bool flag = false;
+  for (auto& item : commodities) {
+    if (flag) {
+      oss << ',';
+    } else {
+      flag = true;
+    }
+    oss << item.second.dump_brief(item.first);
+  }
+  oss << ']';
+  return oss.str().c_str();
+}
+
+std::string Database::get_order_all()
+{
+  std::ostringstream oss;
+  oss << '[';
+  bool flag = false;
+  for (auto& item : orders) {
+    if (flag) {
+      oss << ',';
+    } else {
+      flag = true;
+    }
+    oss << item.second.dump(item.first);
+  }
+  oss << ']';
+  return oss.str().c_str();
+}
+
 std::string User::dump(std::string user_id)
 {
   std::ostringstream oss;
   oss << "{\"user_id\":\"" << user_id << "\", \"user_name\":\""
       << name << "\", \"account_balance\":"
       << account_balance / 100 << '.' << account_balance / 10 % 10
-      << account_balance % 10 << "}\n";
+      << account_balance % 10 << "}";
   return oss.str().c_str();
 }
 
@@ -117,7 +168,7 @@ std::string Commodity::dump_full(std::string commodity_id)
       << name << "\", \"quantity\":"
       << quantity << ", \"unit_price\":"
       << unit_price / 100 << '.' << unit_price / 10 % 10
-      << unit_price % 10 << "}\n";
+      << unit_price % 10 << "}";
   return oss.str().c_str();
 }
 
@@ -126,7 +177,7 @@ std::string Commodity::dump_brief(std::string commodity_id)
   std::ostringstream oss;
   oss << "{\"commodity_id\":\"" << commodity_id << "\", \"commodity_name\":\""
       << name << "\", \"quantity\":"
-      << quantity << "}\n";
+      << quantity << "}";
   return oss.str().c_str();
 }
 

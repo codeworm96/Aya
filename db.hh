@@ -50,6 +50,9 @@ public:
   Order get_order_by_id(int order_id) {
     return orders[order_id];
   }
+  std::string get_user_all();
+  std::string get_commodity_all();
+  std::string get_order_all();
 private:
   std::unordered_map<std::string, User> users;
   std::unordered_map<std::string, Commodity> commodities;

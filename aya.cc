@@ -114,11 +114,62 @@ public:
   }
 };
 
+class GetUserAllHandler : public httpd::handler_base {
+public:
+  virtual future<std::unique_ptr<reply> > handle(const sstring& path,
+                                                 std::unique_ptr<request> req, std::unique_ptr<reply> rep) {
+    return do_with(std::move(req), std::move(rep), [] (auto& req, auto& rep) {
+        return seastar::smp::submit_to(seastar::smp::count - 1, []() {
+            return database.get_user_all();
+          }).then([&rep](std::string res) {
+              rep->_content = res;
+              rep->done("application/json");
+              return make_ready_future<std::unique_ptr<reply>>(std::move(rep));
+            });
+      });
+  }
+};
+
+class GetCommodityAllHandler : public httpd::handler_base {
+public:
+  virtual future<std::unique_ptr<reply> > handle(const sstring& path,
+                                                 std::unique_ptr<request> req, std::unique_ptr<reply> rep) {
+    return do_with(std::move(req), std::move(rep), [] (auto& req, auto& rep) {
+        return seastar::smp::submit_to(seastar::smp::count - 1, []() {
+            return database.get_commodity_all();
+          }).then([&rep](std::string res) {
+              rep->_content = res;
+              rep->done("application/json");
+              return make_ready_future<std::unique_ptr<reply>>(std::move(rep));
+            });
+      });
+  }
+};
+
+class GetOrderAllHandler : public httpd::handler_base {
+public:
+  virtual future<std::unique_ptr<reply> > handle(const sstring& path,
+                                                 std::unique_ptr<request> req, std::unique_ptr<reply> rep) {
+    return do_with(std::move(req), std::move(rep), [] (auto& req, auto& rep) {
+        return seastar::smp::submit_to(seastar::smp::count - 1, []() {
+            return database.get_order_all();
+          }).then([&rep](std::string res) {
+              rep->_content = res;
+              rep->done("application/json");
+              return make_ready_future<std::unique_ptr<reply>>(std::move(rep));
+            });
+      });
+  }
+};
+
 void set_routes(routes& r) {
     r.add(operation_type::GET, url("/seckill/seckill"), new SeckillHandler());
     r.add(operation_type::GET, url("/seckill/getUserById"), new GetUserByIdHandler());
     r.add(operation_type::GET, url("/seckill/getCommodityById"), new GetCommodityByIdHandler());
     r.add(operation_type::GET, url("/seckill/getOrderById"), new GetOrderByIdHandler());
+    r.add(operation_type::GET, url("/seckill/getUserAll"), new GetUserAllHandler());
+    r.add(operation_type::GET, url("/seckill/getCommodityAll"), new GetCommodityAllHandler());
+    r.add(operation_type::GET, url("/seckill/getOrderAll"), new GetOrderAllHandler());
 }
 
 int main(int ac, char** av) {
