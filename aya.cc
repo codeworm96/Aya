@@ -163,13 +163,14 @@ public:
 };
 
 void set_routes(routes& r) {
-    r.add(operation_type::GET, url("/seckill/seckill"), new SeckillHandler());
-    r.add(operation_type::GET, url("/seckill/getUserById"), new GetUserByIdHandler());
-    r.add(operation_type::GET, url("/seckill/getCommodityById"), new GetCommodityByIdHandler());
-    r.add(operation_type::GET, url("/seckill/getOrderById"), new GetOrderByIdHandler());
-    r.add(operation_type::GET, url("/seckill/getUserAll"), new GetUserAllHandler());
-    r.add(operation_type::GET, url("/seckill/getCommodityAll"), new GetCommodityAllHandler());
-    r.add(operation_type::GET, url("/seckill/getOrderAll"), new GetOrderAllHandler());
+    r.put(operation_type::GET, "/seckill/seckill", new SeckillHandler());
+    r.put(operation_type::GET, "/seckill/getUserById", new GetUserByIdHandler());
+    r.put(operation_type::GET, "/seckill/getCommodityById", new GetCommodityByIdHandler());
+    r.put(operation_type::GET, "/seckill/getOrderById", new GetOrderByIdHandler());
+    r.put(operation_type::GET, "/seckill/getUserAll", new GetUserAllHandler());
+    r.put(operation_type::GET, "/seckill/getCommodityAll", new GetCommodityAllHandler());
+    r.put(operation_type::GET, "/seckill/getOrderAll", new GetOrderAllHandler());
+    r.add(operation_type::GET, url("").remainder("path"), new directory_handler("static/"));
 }
 
 int main(int ac, char** av) {
