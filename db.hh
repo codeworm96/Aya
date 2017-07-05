@@ -4,7 +4,6 @@
 #include <string>
 #include <ctime>
 #include <unordered_map>
-#include <map>
 #include <vector>
 #include <utility>
 
@@ -56,8 +55,7 @@ public:
 private:
   std::unordered_map<std::string, User> users;
   std::unordered_map<std::string, Commodity> commodities;
-  std::unordered_map<int, Order> orders;
-  int order_size;
+  std::vector<Order> orders;
   int log_fd;
   char buf[BUFSIZE];
 

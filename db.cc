@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iomanip>
 
-#define RESERVED_ORDER 10000000
+#define RESERVED_ORDER 100000
 
 void Database::recover(std::string input_file, std::string log_file)
 {
@@ -39,16 +39,14 @@ void Database::recover(std::string input_file, std::string log_file)
 
   std::ifstream flog(log_file);
   orders.reserve(RESERVED_ORDER);
-  order_size = 0;
   while(std::getline(flog, buf)) {
     int x = buf.find(',');
     int y = buf.find(',', x + 1);
     Order order(buf.substr(0, x), buf.substr(x + 1, y - x - 1),
                 std::stoi(buf.substr(y + 1)));
-    ++order_size;
-    orders[order_size] = order;
+    std::cout << orders.size() << std::endl;
+    orders.push_back(order);
     perform_order(order);
-    std::cout << order_size << std::endl;
   }
 
   log_fd = open(log_file.c_str(), O_WRONLY|O_APPEND|O_CREAT, S_IRUSR|S_IWUSR);
@@ -91,9 +89,8 @@ std::pair<int, int> Database::seckill(std::string user_id, std::string commodity
   int result = perform_order(order);
   if (result) {
     log_write(order);
-    ++order_size;
-    int order_id = order_size;
-    orders[order_id] = order;
+    int order_id = orders.size();
+    orders.push_back(order);
     return std::make_pair(result, order_id);
   } else {
     return std::make_pair(0, -1);
@@ -139,13 +136,13 @@ std::string Database::get_order_all()
   std::ostringstream oss;
   oss << '[';
   bool flag = false;
-  for (auto& item : orders) {
+  for (size_t i = 0; i < orders.size(); ++i) {
     if (flag) {
       oss << ',';
     } else {
       flag = true;
     }
-    oss << item.second.dump(item.first);
+    oss << orders[i].dump(i);
   }
   oss << ']';
   return oss.str().c_str();
