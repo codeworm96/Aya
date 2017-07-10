@@ -187,10 +187,6 @@ int main(int ac, char** av) {
         });
         server->start().then([server] {
             return server->set_routes(set_routes);
-        }).then([server, rb]{
-            return server->set_routes([rb](routes& r){rb->set_api_doc(r);});
-        }).then([server, rb]{
-            return server->set_routes([rb](routes& r) {rb->register_function(r, "demo", "hello world application");});
         }).then([server, port] {
             return server->listen(port);
         }).then([server, port] {
