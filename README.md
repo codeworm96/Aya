@@ -9,11 +9,6 @@ git submodule init
 git submodule update --init --recursive
 ```
 
-patch the seastar with files under patch
-```
-./patch.sh
-```
-
 Installing required packages:
 ```
 sudo ./seastar/install-dependencies.sh

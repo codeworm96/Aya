@@ -1,3 +1,4 @@
 [submodule "seastar"]
 	path = seastar
-	url = https://github.com/scylladb/seastar.git
+	url = git@github.com:codeworm96/seastar.git
+	branch = reserve_core
